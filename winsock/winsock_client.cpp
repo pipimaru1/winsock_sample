@@ -79,9 +79,9 @@ int main(int argc, char* argv[])
         std::cout << "Connection success" << std::endl;
 
     // データの準備
-    char data[NUM_STRINGS][STRING_LENGTH] = { "String 1", "String 2", "String 3", "String 4",
-                                              "String 5", "String 6", "String 7", "String 8",
-                                              "String 9", "String 10", "String 11", "String 12",
+    char data[NUM_STRINGS][STRING_LENGTH] = { "String 1",  "String 2",  "String 3",  "String 4",
+                                              "String 5",  "String 6",  "String 7",  "String 8",
+                                              "String 9",  "String 10", "String 11", "String 12",
                                               "String 13", "String 14", "String 15", "String 16" };
 
     // マウス座標の送信ループ
@@ -91,6 +91,7 @@ int main(int argc, char* argv[])
         strcpy_s((char*)data[0], STRING_LENGTH, "CLIENT_001");
         float_to_char32((float)mousePos.x, data[1]);
         float_to_char32((float)mousePos.y, data[2]);
+        float_to_char32(0.0f, data[3]);
 
         send_char32x16(sock, data);
 
