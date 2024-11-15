@@ -173,57 +173,6 @@ int main()
     //IPアドレス表示
     displayLocalIPAddress();
     
-    /*
-    // Winsockの初期化
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
-    {
-        std::cerr << "WSAStartup failed" << std::endl;
-        return 1;
-    }
-    else
-        std::cerr << "WSAStartup success" << std::endl;
-
-
-    // ソケット作成
-    SOCKET listenSock = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenSock == INVALID_SOCKET) {
-        std::cerr << "Socket creation failed." << std::endl;
-        WSACleanup();
-        return 1;
-    }
-    else
-        std::cerr << "Socket creation success" << std::endl;
-
-
-    // サーバーアドレスの設定
-    sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
-
-    // ソケットをバインド
-    if (bind(listenSock, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) 
-    {
-        std::cerr << "Bind failed." << std::endl;
-        closesocket(listenSock);
-        WSACleanup();
-        return 1;
-    }
-    else
-        std::cerr << "Bind success" << std::endl;
-
-    // 接続待ち
-    if (listen(listenSock, 1) == SOCKET_ERROR) {
-        std::cerr << "Listen failed." << std::endl;
-        closesocket(listenSock);
-        WSACleanup();
-        return 1;
-    }
-    else
-        std::cerr << "Listen success" << std::endl;
-    */
-
     WinsockServer wsv;
     wsv.open();
 
@@ -231,27 +180,14 @@ int main()
 
     while (true) 
     {
-        /*
-        // クライアントからの接続を受け入れる
-        SOCKET clientSock = accept(wsv.listenSock, NULL, NULL);
-        if (clientSock == INVALID_SOCKET) 
-        {
-            std::cerr << "Accept failed." << std::endl;
-            closesocket(wsv.listenSock);
-            WSACleanup();
-            return 1;
-        }
-        else
-            std::cerr << "Accept success" << std::endl;
-            */
 
         wsv.sklisten();
-
         // データ受信ループ
         while (true) 
         {
             //float data[3];
             //int bytesReceived = wsv.recievef3(data, sizeof(data));
+
             char data[NUM_STRINGS][STRING_LENGTH];
             int bytesReceived = wsv.recieve_char32x16(data);
 
@@ -264,16 +200,10 @@ int main()
             // マウス座標を表示
             std::cout <<"ID: "<<data[0] << " Mouse Position: X=" << data[1] << " Y=" << data[2] << " Z=" << data[3] << std::endl;
         }
-        // ソケットのクリーンアップ
-        //closesocket(clientSock);
-        //std::cout << "Waiting for new connection..." << std::endl;
         wsv.sockend();
     }
 
     wsv.close();
-/*
-    closesocket(listenSock);
-    WSACleanup();
-*/
+
     return 0;
 }
