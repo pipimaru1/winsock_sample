@@ -51,13 +51,13 @@ void displayLocalIPAddress(char ip_address[IPSTR_NUM][IPSTR_LENGTH])
     }
 
     int i = 0;
-    std::cout << "Server IP Addresses:" << std::endl;
+    std::cerr << "Server IP Addresses:" << std::endl;
     for (struct addrinfo* ptr = result; ptr != nullptr; ptr = ptr->ai_next)
     {
         struct sockaddr_in* sockaddr_ipv4 = (struct sockaddr_in*)ptr->ai_addr;
         char ipAddress[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(sockaddr_ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
-        std::cout << "  - " << ipAddress << std::endl;
+        std::cerr << "  - " << ipAddress << std::endl;
         strcpy_s(ip_address[i], IPSTR_LENGTH, ipAddress);
 
         WSACleanup();
@@ -143,10 +143,10 @@ int main(int argc, char* argv[])
     int polling_time = atoi(argv[4]);
 
     //引数解析結果表示
-    std::cout << "Server IP Adress = " << serverIP << std::endl;
-    std::cout << "Port = " << Port << std::endl;
-    std::cout << "Protocol(TCP:0/UDP:1) = " << Protocol << std::endl;
-    std::cout << "Polling Time = " << polling_time << std::endl;
+    std::cerr << "Server IP Adress = " << serverIP << std::endl;
+    std::cerr << "Port = " << Port << std::endl;
+    std::cerr << "Protocol(TCP:0/UDP:1) = " << Protocol << std::endl;
+    std::cerr << "Polling Time = " << polling_time << std::endl;
 
     //IPアドレス表示
     displayLocalIPAddress(IP_ADRRESS);
@@ -159,30 +159,30 @@ int main(int argc, char* argv[])
         {
             // キー入力があれば、終了処理 winsock処理開始前なので何もせずbreak
             if (_kbhit()) {
-                std::cout << "Key pressed, exiting..." << std::endl;
+                std::cerr << "Key pressed, exiting..." << std::endl;
                 break;
             }
 
             WSADATA wsaData;
             if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-                std::cout << "WSAStartup failed" << std::endl;
+                std::cerr << "WSAStartup failed" << std::endl;
                 return 1;
             }
             else
-                std::cout << "WSAStartup success" << std::endl;
+                std::cerr << "WSAStartup success" << std::endl;
 
             // ソケット作成
             SOCKET sock;
             sock = socket(AF_INET, SOCK_STREAM, 0);
 
             if (sock == INVALID_SOCKET) {
-                std::cout << "Socket creation failed" << std::endl;
+                std::cerr << "Socket creation failed" << std::endl;
                 WSACleanup();
                 //return 1;
                 continue;
             }
             else
-                std::cout << "Socket creation success" << std::endl;
+                std::cerr << "Socket creation success" << std::endl;
 
             // サーバーアドレスの設定
             sockaddr_in serverAddr;
@@ -193,16 +193,16 @@ int main(int argc, char* argv[])
             // サーバーに接続
             if (connect(sock, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
             {
-                std::cout << "Connection failed" << std::endl;
+                std::cerr << "Connection failed" << std::endl;
                 closesocket(sock);
                 WSACleanup();
                 Sleep(polling_time); // 待機
-                std::cout << "Waiting Server: " << serverIP << std::endl;
+                std::cerr << "Waiting Server: " << serverIP << std::endl;
                 //return 1;
                 continue;
             }
             else
-                std::cout << "Connection success" << std::endl;
+                std::cerr << "Connection success" << std::endl;
 
             // データの準備
             char data[NUM_STRINGS][STRING_LENGTH] = {
@@ -218,9 +218,9 @@ int main(int argc, char* argv[])
                 // キー入力があれば、終了処理
                 if (_kbhit()) {
                     closesocket(sock);
-                    std::cout << "closesocket" << std::endl;
+                    std::cerr << "closesocket" << std::endl;
                     WSACleanup();
-                    std::cout << "WSACleanup" << std::endl;
+                    std::cerr << "WSACleanup" << std::endl;
                     goto end;       // 外側ループの終了
                 }
 
@@ -239,21 +239,21 @@ int main(int argc, char* argv[])
                     break;
 
                 //送信がうまくいったら送信内容を表示
-                std::cout << "data[" << NUM_STRINGS << "]=";
+                std::cerr << "data[" << NUM_STRINGS << "]=";
                 for (int k = 0; k < NUM_STRINGS; k++)
                 {
-                    std::cout << data[k] << ", ";
+                    std::cerr << data[k] << ", ";
                 }
-                std::cout << std::endl;
+                std::cerr << std::endl;
 
                 // 指定時間待機
                 Sleep(polling_time);
             }
             // ソケットのクリーンアップ
             closesocket(sock);
-            std::cout << "closesocket" << std::endl;
+            std::cerr << "closesocket" << std::endl;
             WSACleanup();
-            std::cout << "WSACleanup" << std::endl;
+            std::cerr << "WSACleanup" << std::endl;
         }
     }
     else //UDP
@@ -263,50 +263,30 @@ int main(int argc, char* argv[])
         {
             // キー入力があれば、終了処理 winsock処理開始前なので何もせずbreak
             if (_kbhit()) {
-                std::cout << "Key pressed, exiting..." << std::endl;
+                std::cerr << "Key pressed, exiting..." << std::endl;
                 break;
             }
 
             WSADATA wsaData;
             if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-                std::cout << "WSAStartup failed" << std::endl;
+                std::cerr << "WSAStartup failed" << std::endl;
                 return 1;
             }
             else
-                std::cout << "WSAStartup success" << std::endl;
+                std::cerr << "WSAStartup success" << std::endl;
 
             // ソケット作成
             SOCKET sock;
             sock = socket(AF_INET, SOCK_DGRAM, 0);
 
             if (sock == INVALID_SOCKET) {
-                std::cout << "Socket creation failed" << std::endl;
+                std::cerr << "Socket creation failed" << std::endl;
                 WSACleanup();
                 //return 1;
                 continue;
             }
             else
-                std::cout << "Socket creation success" << std::endl;
-
-            //// サーバーアドレスの設定
-            //sockaddr_in serverAddr;
-            //serverAddr.sin_family = AF_INET;
-            //serverAddr.sin_port = htons(Port);
-            //inet_pton(AF_INET, serverIP.c_str(), &serverAddr.sin_addr);
-
-            //// サーバーに接続
-            //if (connect(sock, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
-            //{
-            //    std::cout << "Connection failed" << std::endl;
-            //    closesocket(sock);
-            //    WSACleanup();
-            //    Sleep(polling_time); // 待機
-            //    std::cout << "Waiting Server: " << serverIP << std::endl;
-            //    //return 1;
-            //    continue;
-            //}
-            //else
-            //    std::cout << "Connection success" << std::endl;
+                std::cerr << "Socket creation success" << std::endl;
 
             // データの準備
             char data[NUM_STRINGS][STRING_LENGTH] = {
@@ -322,9 +302,9 @@ int main(int argc, char* argv[])
                 // キー入力があれば、終了処理
                 if (_kbhit()) {
                     closesocket(sock);
-                    std::cout << "closesocket" << std::endl;
+                    std::cerr << "closesocket" << std::endl;
                     WSACleanup();
-                    std::cout << "WSACleanup" << std::endl;
+                    std::cerr << "WSACleanup" << std::endl;
                     goto end;       // 外側ループの終了
                 }
 
@@ -339,19 +319,19 @@ int main(int argc, char* argv[])
                 int ret = send_char32x16_udp(sock, serverIP.c_str(), Port, data);
 
                 //送信がうまくいかなかったら送信ループを出る
-                if (ret)
+                if (ret== SOCKET_ERROR)
                 {
                     Sleep(polling_time);
                     break;
                 }
                 else //送信がうまくいったら送信内容を表示
                 {
-                    std::cout << "data[" << NUM_STRINGS << "]=";
+                    std::cerr << "data[" << NUM_STRINGS << "]=";
                     for (int k = 0; k < NUM_STRINGS; k++)
                     {
-                        std::cout << data[k] << ", ";
+                        std::cerr << data[k] << ", ";
                     }
-                    std::cout << std::endl;
+                    std::cerr << std::endl;
                     // 指定時間待機
                     Sleep(polling_time);
                 }
@@ -359,9 +339,9 @@ int main(int argc, char* argv[])
 
             // ソケットのクリーンアップ
             closesocket(sock);
-            std::cout << "closesocket" << std::endl;
+            std::cerr << "closesocket" << std::endl;
             WSACleanup();
-            std::cout << "WSACleanup" << std::endl;
+            std::cerr << "WSACleanup" << std::endl;
         }
     }
 //キー入力があったときのジャンプ箇所

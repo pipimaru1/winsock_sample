@@ -46,13 +46,13 @@ void displayLocalIPAddress(char ip_address[IPSTR_NUM][IPSTR_LENGTH])
     }
 
     int i = 0;
-    std::cout << "Server IP Addresses:" << std::endl;
+    std::cerr << "Server IP Addresses:" << std::endl;
     for (struct addrinfo* ptr = result; ptr != nullptr; ptr = ptr->ai_next) 
     {
         struct sockaddr_in* sockaddr_ipv4 = (struct sockaddr_in*)ptr->ai_addr;
         char ipAddress[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(sockaddr_ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
-        std::cout << "  - " << ipAddress << std::endl;
+        std::cerr << "  - " << ipAddress << std::endl;
         strcpy_s(ip_address[i], IPSTR_LENGTH, ipAddress);
 
         WSACleanup();
@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
     }    // Winsockの初期化
     else
     {
-        std::cout << "Waiting Port = " << argv[1] << std::endl;
-        std::cout << "Protcol = " << argv[2] << std::endl;
+        std::cerr << "Waiting Port = " << argv[1] << std::endl;
+        std::cerr << "Protcol = " << argv[2] << std::endl;
 
         wsv.Port = std::stoi(argv[1]);
 
@@ -102,13 +102,13 @@ int main(int argc, char* argv[])
 
     wsv.open();
 
-    std::cout << "Waiting for connection..." << std::endl;
+    std::cerr << "Waiting for connection..." << std::endl;
 
     while (true)
     {
         // キー入力があれば、終了処理
         if (_kbhit()) {
-            std::cout << "Key pressed, exiting..." << std::endl;
+            std::cerr << "Key pressed, exiting..." << std::endl;
             break;
         }
 
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
         {
             // キー入力があれば、終了処理
             if (_kbhit()) {
-                std::cout << "Key pressed, exiting..." << std::endl;
+                std::cerr << "Key pressed, exiting..." << std::endl;
                 wsv.sockend(); // 内部ループの終了時にもクリーンアップ
                 goto end;       // 外側ループの終了
             }
@@ -128,8 +128,8 @@ int main(int argc, char* argv[])
             if (ret <= 0)
                 break;
             // マウス座標を表示
-            //std::cout << "ID: " << wsv.data[0] << " Mouse Position: X=" << wsv.data[1] << " Y=" << wsv.data[2] << " Z=" << wsv.data[3] << std::endl;
-            std::cout << "ID: " << wsv.data[0] << " Mouse Position: X=" << wsv.get_float(1) << " Y=" << wsv.get_float(2) << " Z=" << wsv.get_float(3) << std::endl;
+            //std::cerr  << "ID: " << wsv.data[0] << " Mouse Position: X=" << wsv.data[1] << " Y=" << wsv.data[2] << " Z=" << wsv.data[3] << std::endl;
+            std::cerr << "ID: " << wsv.data[0] << " Mouse Position: X=" << wsv.get_float(1) << " Y=" << wsv.get_float(2) << " Z=" << wsv.get_float(3) << std::endl;
         }
         wsv.sockend();
     }

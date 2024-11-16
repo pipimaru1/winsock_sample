@@ -78,7 +78,7 @@ int WinsockServer::open()
             std::cerr << "Listen success" << std::endl;
     }
 
-    std::cout << "Waiting for connection..." << std::endl;
+    std::cerr << "Waiting for connection..." << std::endl;
 
     return 0;
 }
@@ -106,7 +106,7 @@ int WinsockServer::sklisten()
 int WinsockServer::sockend()
 {
     closesocket(clientSock);
-    std::cout << "Waiting for new connection..." << std::endl;
+    std::cerr << "Waiting for new connection..." << std::endl;
     return 0;
 }
 
@@ -131,10 +131,15 @@ int WinsockServer::receive_char32x16(char _data[NUM_STRINGS][STRING_LENGTH])
     {
         sockaddr_in clientAddr;
         int clientAddrSize = sizeof(clientAddr);
-        int bytesReceived = recvfrom(clientSock, reinterpret_cast<char*>(_data), NUM_STRINGS * STRING_LENGTH, 0, (struct sockaddr*)&clientAddr, &clientAddrSize);
+        //recvfrom()で使用するソケットは、UDPの場合はlistenSockです。clientSockを使わないようにします。
+        //int bytesReceived = recvfrom(clientSock, reinterpret_cast<char*>(_data), NUM_STRINGS * STRING_LENGTH, 0, (struct sockaddr*)&clientAddr, &clientAddrSize);
+        int bytesReceived = recvfrom(listenSock, reinterpret_cast<char*>(_data), NUM_STRINGS * STRING_LENGTH, 0, (struct sockaddr*)&clientAddr, &clientAddrSize);
+
         if (bytesReceived == SOCKET_ERROR) {
             std::cerr << "Receive failed with error: " << WSAGetLastError() << std::endl;
+            return -1;
         }
+        return bytesReceived;
     }
     else
     {
