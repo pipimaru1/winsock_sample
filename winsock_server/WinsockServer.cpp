@@ -4,6 +4,8 @@
 #include <cstdio> // snprintf
 #include <ws2tcpip.h>
 #include <string>
+#include <thread>
+
 #include "WinsockServer.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -14,7 +16,9 @@ WinsockServer::WinsockServer():
     wsaData(),
     listenSock(),
     serverAddr(),
-    clientSock(0)
+    clientSock(0),
+    loop_linten_on(false),
+    count_of_contact(0ULL)
 {
     Port = (u_short)4410;
     Protocol = false;
@@ -83,7 +87,7 @@ int WinsockServer::open()
     return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////
-int WinsockServer::sklisten()
+int WinsockServer::start_listen()
 {
     if (Protocol)//UDP リッスン不要
         return 0;
@@ -176,4 +180,39 @@ int WinsockServer::get_int(size_t num)
 {
     int value = std::stoi(data[num]);
     return value;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//スレッド用の関数
+void WinsockServer::loop_linten()
+{
+    //loop_linten_onがfalseになるまで実行 中断用フラグ
+    while (loop_linten_on)
+    {
+        //受信 UDPの場合 ここで止まる TCPだと止まらない?
+        int ret = receive();
+
+        if (ret == 0)
+            break;
+
+        //テスト用コード
+        std::cerr << "ID: " << data[0] << " Mouse Position: X=" << get_float(1) << " Y=" << get_float(2) << " Z=" << get_float(3) << std::endl;
+    }
+}
+
+// メソッドの実装
+void WinsockServer::startLoopInThread() {
+    // スレッドをスタート
+    loop_linten_on = true; // ループを継続するフラグ
+    listenThread = std::thread(&WinsockServer::loop_linten, this); // loop_lintenを別スレッドで開始
+}
+
+void WinsockServer::stopLoop() 
+{
+    // スレッドを停止する処理
+    loop_linten_on = false; // ループを停止するフラグを設定
+    if (listenThread.joinable()) 
+    {
+        listenThread.join(); // スレッドを終了待ち
+    }
 }

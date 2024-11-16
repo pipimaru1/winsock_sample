@@ -5,6 +5,7 @@
 #include <ws2tcpip.h>
 #include <string>
 #include <conio.h>  // Windows用キー入力監視 (_kbhit())
+#include <thread>
 
 #include "WinsockServer.h"
 
@@ -104,6 +105,101 @@ int main(int argc, char* argv[])
 
     std::cerr << "Waiting for connection..." << std::endl;
 
+    //TCPとUDPでは待ち方で違いが出てくる
+    if (wsv.Protocol)
+    {
+        //while (true)
+        //{
+            //UDPの場合は何もしない
+        wsv.start_listen();
+
+        // データ受信ループ
+        wsv.startLoopInThread();
+        //wsv.listenThread.join();// スレッドを終了待ち
+
+        while (true)// キー入力があれば、終了処理
+        {
+            if (_kbhit()) {
+                std::cerr << "Key pressed, exiting..." << std::endl;
+                wsv.stopLoop();
+                wsv.sockend();
+                break;
+            }
+            Sleep(100);
+        }
+        //    }
+    }
+    else //TCP
+    {
+        while (true)
+        {
+            wsv.start_listen();
+
+            // データ受信ループ
+            wsv.startLoopInThread();
+            
+            //wsv.listenThread.join();// スレッドを終了待ち
+
+            while (true)
+            {
+                if (_kbhit()) {
+                    std::cerr << "Key pressed, exiting..." << std::endl;
+                    wsv.stopLoop();
+                    //goto end;
+                    break;
+                }
+                Sleep(100);
+            }
+            wsv.sockend();
+        }
+    }
+//end:
+    wsv.close();
+    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//main 動くやつをとっておく
+////////////////////////////////////////////////////////////////////////////////
+int main_org(int argc, char* argv[])
+{
+    WinsockServer wsv;
+
+    // コマンドライン引数のチェック
+    if (argc < 3)
+    {
+        std::cerr << "Usage: " << argv[0] << " <Waiting Port> <TCP or UDP>" << std::endl;
+        std::cerr << "Use default Port = 4410, Protocol = TCP" << std::endl;
+    }    // Winsockの初期化
+    else
+    {
+        std::cerr << "Waiting Port = " << argv[1] << std::endl;
+        std::cerr << "Protcol = " << argv[2] << std::endl;
+
+        wsv.Port = std::stoi(argv[1]);
+
+        // プロトコルの比較
+        if (strcmp(argv[2], "UDP") == 0 ||
+            strcmp(argv[2], "udp") == 0)
+            wsv.Protocol = true;
+        else
+            wsv.Protocol = false;
+
+        std::cerr << "Use default Port = " << wsv.Port;
+
+        if (wsv.Protocol)
+            std::cerr << ", Protocol = UDP" << std::endl;
+        else
+            std::cerr << ", Protocol = TCP" << std::endl;
+    }
+
+    //IPアドレス表示
+    displayLocalIPAddress(IP_ADRRESS);
+
+    wsv.open();
+
+    std::cerr << "Waiting for connection..." << std::endl;
+
     while (true)
     {
         // キー入力があれば、終了処理
@@ -112,7 +208,7 @@ int main(int argc, char* argv[])
             break;
         }
 
-        wsv.sklisten();
+        wsv.start_listen();
         // データ受信ループ
         while (true)
         {

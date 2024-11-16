@@ -18,7 +18,7 @@ public:
     char data[NUM_STRINGS][STRING_LENGTH];
 
     int open();
-    int sklisten();
+    int start_listen();
     //int receive();
     //int receive(char* data, size_t size, int flag = 0);
     //int receive(reinterpret_cast<char*> data, size_t size, int flag = 0);
@@ -32,6 +32,17 @@ public:
     float get_float(size_t num); //num番目の要素をfloatで返す
     double get_double(size_t num); //num番目の要素をdoubleで返す
     int get_int(size_t num); //num番目の要素をintで返す
+
+
+    // スレッド用
+    std::thread listenThread;
+    void startLoopInThread(); // loop_lintenを別スレッドで開始する
+
+    void stopLoop(); // スレッドの停止処理    unsigned long long count_loop_listen;
+
+    unsigned long long count_of_contact;
+    bool loop_linten_on;
+    void loop_linten();
 
     WinsockServer();
 };
