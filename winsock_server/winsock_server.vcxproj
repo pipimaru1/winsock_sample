@@ -129,7 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="winsock_server.cpp" />
+    <ClCompile Include="WinsockServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinsockServer.h" />
