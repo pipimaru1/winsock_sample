@@ -115,7 +115,10 @@ int main(int argc, char* argv[])
 
         // データ受信ループ
         wsv.startLoopInThread();
-        //wsv.listenThread.join();// スレッドを終了待ち
+        //wsv.listenThread.join();// スレッドを終了待ち スレッドにした意味がなくなるやん!!
+
+        //↓通信が開始したあとこのループに入り出てこない。出てくるときは終了するとき。
+        //win32APIではこの処理はwindprocが行うので気にしなくていい
 
         while (true)// キー入力があれば、終了処理
         {
@@ -123,13 +126,13 @@ int main(int argc, char* argv[])
                 std::cerr << "Key pressed, exiting..." << std::endl;
                 wsv.stopLoop();
                 wsv.sockend();
-                break;
+                goto end;
             }
             Sleep(100);
         }
         //    }
     }
-    else //TCP
+    else 
     {
         while (true)
         {
@@ -137,23 +140,66 @@ int main(int argc, char* argv[])
 
             // データ受信ループ
             wsv.startLoopInThread();
-            
-            //wsv.listenThread.join();// スレッドを終了待ち
+            //wsv.listenThread.join();// スレッドを終了待ち スレッドにした意味がなくなるやん!!
 
+            //↓通信が開始したあとこのループに入り出てこない。出てくるときは終了するとき。
+            //win32APIではこの処理はwindprocが行うので気にしなくていい
             while (true)
             {
                 if (_kbhit()) {
                     std::cerr << "Key pressed, exiting..." << std::endl;
                     wsv.stopLoop();
-                    //goto end;
-                    break;
+                    wsv.sockend();
+                    goto end;
+                    //break;
                 }
                 Sleep(100);
             }
-            wsv.sockend();
         }
     }
-//end:
+    //else
+    //{
+    //    while (true)
+    //    {
+    //        // 新しいクライアントの接続を待つ
+    //        if (wsv.start_listen() != 0)
+    //        {
+    //            std::cerr << "Failed to accept client connection." << std::endl;
+    //            break;
+    //        }
+
+    //        // データ受信ループを別スレッドで開始
+    //        wsv.startLoopInThread();
+
+    //        // メイン処理を継続しつつ、クライアントの接続状態を監視
+    //        while (true)
+    //        {
+    //            // メイン処理コード
+    //            // ここに必要な処理を記述
+
+    //            // クライアントの接続状態をチェック
+    //            if (!wsv.client_connected)
+    //            {
+    //                std::cerr << "Client disconnected." << std::endl;
+    //                wsv.stopLoop();
+    //                wsv.sockend();
+    //                break; // 外側のループに戻り、新しい接続を待つ
+    //            }
+
+    //            // 終了指示のためのキーボード入力をチェック
+    //            if (_kbhit())
+    //            {
+    //                std::cerr << "Key pressed, exiting..." << std::endl;
+    //                wsv.stopLoop();
+    //                wsv.sockend();
+    //                goto end;
+    //            }
+
+    //            Sleep(100); // CPU負荷を下げるためにスリープ
+    //        }
+    //    }
+    //}
+end:
     wsv.close();
     return 0;
 }

@@ -18,6 +18,7 @@ WinsockServer::WinsockServer():
     serverAddr(),
     clientSock(0),
     loop_linten_on(false),
+    client_connected(false), // 初期化
     count_of_contact(0ULL)
 {
     Port = (u_short)4410;
@@ -186,15 +187,33 @@ int WinsockServer::get_int(size_t num)
 //スレッド用の関数
 void WinsockServer::loop_linten()
 {
+    //client_connected = true; // クライアントが接続中であることを示す
+    //while (loop_linten_on && client_connected)
+    //{
+    //    int ret = receive();
+    //    count_of_contact++;
+
+    //    if (ret <= 0)
+    //    {
+    //        // クライアントが切断した場合
+    //        std::cerr << "Client disconnected or error occurred." << std::endl;
+    //        client_connected = false; // 接続状態を更新
+    //        break;
+    //    }
+
+    //    // データ処理コード
+    //    std::cerr << "ID: " << data[0] << " Mouse Position: X=" << get_float(1)
+    //        << " Y=" << get_float(2) << " Z=" << get_float(3) << std::endl;
+    //}
+    //client_connected = false; // ループ終了時に接続状態を更新
+
     //loop_linten_onがfalseになるまで実行 中断用フラグ
     while (loop_linten_on)
     {
         //受信 UDPの場合 ここで止まる TCPだと止まらない?
         int ret = receive();
-
         if (ret == 0)
             break;
-
         //テスト用コード
         std::cerr << "ID: " << data[0] << " Mouse Position: X=" << get_float(1) << " Y=" << get_float(2) << " Z=" << get_float(3) << std::endl;
     }

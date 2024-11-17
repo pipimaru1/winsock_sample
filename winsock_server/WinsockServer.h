@@ -40,7 +40,8 @@ public:
 
     void stopLoop(); // スレッドの停止処理    unsigned long long count_loop_listen;
 
-    unsigned long long count_of_contact;
+    std::atomic<bool> client_connected;  // クライアントの接続状態を示すフラグ
+    unsigned long long count_of_contact; //通信した回数
     bool loop_linten_on;
     void loop_linten();
 
