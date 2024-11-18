@@ -12,6 +12,7 @@ public:
     SOCKET clientSock;
 
     u_short Port;
+    int udp_timeout;
 
     bool Protocol; //false=TCP, true=UDP
 

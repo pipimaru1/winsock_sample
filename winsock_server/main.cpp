@@ -110,8 +110,8 @@ int main(int argc, char* argv[])
     {
         //while (true)
         //{
-            //UDPの場合は何もしない
-        wsv.start_listen();
+        //UDPの場合は何もしない、不要
+        //wsv.start_listen();
 
         // データ受信ループ
         wsv.startLoopInThread();

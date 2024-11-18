@@ -22,6 +22,7 @@ WinsockServer::WinsockServer():
     count_of_contact(0ULL)
 {
     Port = (u_short)4410;
+    udp_timeout = 100;      //0.1秒
     Protocol = false;
 
     serverAddr.sin_family = AF_INET;
@@ -69,6 +70,10 @@ int WinsockServer::open()
     }
     else
         std::cerr << "Bind success" << std::endl;
+
+    // 受信タイムアウトを 設定
+    int timeout = 2000; // ミリ秒
+    setsockopt(listenSock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 
     // 接続待ちに入る
     if (!Protocol)//TCP
@@ -213,7 +218,9 @@ void WinsockServer::loop_linten()
         //受信 UDPの場合 ここで止まる TCPだと止まらない?
         int ret = receive();
         if (ret == 0)
-            break;
+            continue;
+        else if (ret == -1)
+            continue;
         //テスト用コード
         std::cerr << "ID: " << data[0] << " Mouse Position: X=" << get_float(1) << " Y=" << get_float(2) << " Z=" << get_float(3) << std::endl;
     }
