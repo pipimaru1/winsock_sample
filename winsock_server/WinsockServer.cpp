@@ -6,6 +6,8 @@
 #include <string>
 #include <thread>
 
+#include "stdafx.h"
+
 #include "WinsockServer.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -18,6 +20,8 @@ WinsockServer::WinsockServer():
     serverAddr(),
     clientSock(0),
     loop_linten_on(false),
+    hWnd(NULL),
+    Message(0),
     client_connected(false), // 初期化
     count_of_contact(0ULL)
 {
@@ -28,6 +32,16 @@ WinsockServer::WinsockServer():
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(Port);
     serverAddr.sin_addr.s_addr = INADDR_ANY;
+}
+
+WinsockServer::~WinsockServer()
+{
+    //通信処理のお片付け
+    if (loop_linten_on)
+    {
+        stopLoop();
+        sockend();
+    }
 }
 
 int WinsockServer::open()
@@ -223,13 +237,19 @@ void WinsockServer::loop_linten()
             continue;
         //テスト用コード
         std::cerr << "ID: " << data[0] << " Mouse Position: X=" << get_float(1) << " Y=" << get_float(2) << " Z=" << get_float(3) << std::endl;
+        
+        PostMessage(hWnd, Message, 0, 0);
+        //SendMessage(hWnd, Message, 0, 0);
+        //
     }
 }
 
 // メソッドの実装
-void WinsockServer::startLoopInThread() {
+void WinsockServer::startLoopInThread() 
+{
     // スレッドをスタート
     loop_linten_on = true; // ループを継続するフラグ
+    //Message = _msg;
     listenThread = std::thread(&WinsockServer::loop_linten, this); // loop_lintenを別スレッドで開始
 }
 

@@ -11,6 +11,10 @@ public:
     sockaddr_in serverAddr;
     SOCKET clientSock;
 
+    //受信した時のメッセージ処理
+    HWND hWnd; //nullだとメッセージ発行しない
+    UINT Message;//受信したときにメッセージを発行 0だと発行しない
+
     u_short Port;
     int udp_timeout;
 
@@ -47,4 +51,5 @@ public:
     void loop_linten();
 
     WinsockServer();
+    ~WinsockServer();
 };
