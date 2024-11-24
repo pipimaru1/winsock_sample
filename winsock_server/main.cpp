@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <winsock2.h>
 #include <windows.h>
 #include <iostream>

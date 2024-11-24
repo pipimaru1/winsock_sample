@@ -1,4 +1,6 @@
-﻿#include <winsock2.h>
+﻿#include "stdafx.h"
+
+#include <winsock2.h>
 #include <windows.h>
 #include <iostream>
 #include <cstdio> // snprintf
@@ -7,7 +9,7 @@
 #include <thread>
 
 //#ifdef _DEBUG
-#include "stdafx.h"
+//#include "stdafx.h"
 //#endif
 
 #include "WinsockServer.h"

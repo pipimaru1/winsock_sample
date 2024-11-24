@@ -20,7 +20,7 @@ public:
 
     bool Protocol; //false=TCP, true=UDP
 
-    char data[NUM_STRINGS][STRING_LENGTH];
+    char data[NUM_STRINGS][STRING_LENGTH] = { 0 };
 
     int open();
     int start_listen();
