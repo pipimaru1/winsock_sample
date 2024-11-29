@@ -9,7 +9,7 @@
 #include <thread>
 
 //#ifdef _DEBUG
-//#include "stdafx.h"
+#include "stdafx.h"
 //#endif
 
 #include "WinsockServer.h"
